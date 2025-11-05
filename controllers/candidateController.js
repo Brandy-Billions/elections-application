@@ -26,3 +26,8 @@ exports.getAllCandidatesByElectionId = (req, res) => {
     const list = candidates.filter(c => c.electionId === id );
     res.json(list);
 }
+
+exports.deleteCandidate = (req, res) => {
+    const candidate = candidates.filter((candidate) => candidate.id !== req.params.id)
+    res.json(candidate)
+}
