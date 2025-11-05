@@ -1,0 +1,133 @@
+University Election Voting System — Node.js & Express.js Assignment
+🎯 Objective
+Create a simple RESTful API using Node.js and Express.js to simulate a University Election Voting System. Students will practice setting up an Express server, organizing code with routes and controllers, handling CRUD operations, and working with in-memory data (arrays).
+🧱 Project Requirements
+1️⃣ Project Setup
+1. Initialize a new Node.js project using:
+   npm init -y
+
+2. Install dependencies:
+   npm install express nodemon
+
+3. Add a start script in package.json:
+{ "scripts": { "start": "nodemon server.js" } }
+
+4. Folder structure:
+university-election-api/
+├── server.js
+├── routes/
+│   ├── studentRoutes.js
+│   ├── electionRoutes.js
+│   ├── candidateRoutes.js
+│   └── voteRoutes.js
+├── controllers/
+│   ├── studentController.js
+│   ├── electionController.js
+│   ├── candidateController.js
+│   └── voteController.js
+└── data/
+    └── data.js (for in-memory arrays)
+2️⃣ Core Features
+All data should be stored in arrays inside data/data.js.
+
+Example structure:
+
+let students = [];
+let elections = [];
+let candidates = [];
+let votes = [];
+
+module.exports = { students, elections, candidates, votes };
+👨‍🎓 A. Student Routes
+POST /api/students/register — Register a new student
+GET /api/students — Get all registered students
+
+Request Example:
+{ "name": "John Doe", "email": "john@example.com", "matricNumber": "U2021/12345" }
+🗳️ B. Election Routes
+POST /api/elections — Create a new election
+GET /api/elections — List all elections
+
+Request Example:
+{ "title": "Student Union Election 2025", "description": "Election for student body positions" }
+👤 C. Candidate Routes
+POST /api/candidates — Add a candidate to an election
+GET /api/candidates — Get all candidates
+GET /api/candidates/:electionId — Get all candidates in a specific election
+
+Request Example:
+{ "name": "Alice Johnson", "department": "Computer Science", "electionId": 1 }
+🧾 D. Voting Routes
+POST /api/votes — Cast a vote for a candidate
+GET /api/results/:electionId — Get election results (vote counts per candidate)
+
+Request Example:
+{ "studentId": 1, "candidateId": 3, "electionId": 1 }
+
+Voting Rules:
+- A student can vote only once per election.
+- Each vote must be linked to both a student and a candidate.
+3️⃣ Controller Responsibilities
+Each controller file should import data arrays from data/data.js, implement logic for each route, and send responses using res.json().
+
+Example (studentController.js):
+
+const { students } = require('../data/data');
+
+let studentId = 1;
+
+exports.registerStudent = (req, res) => {
+  const { name, email, matricNumber } = req.body;
+  const newStudent = { id: studentId++, name, email, matricNumber };
+  students.push(newStudent);
+  res.json({ message: 'Student registered successfully', student: newStudent });
+};
+
+exports.getAllStudents = (req, res) => {
+  res.json(students);
+};
+4️⃣ Route Example
+Example (studentRoutes.js):
+
+const express = require('express');
+const router = express.Router();
+const { registerStudent, getAllStudents } = require('../controllers/studentController');
+
+router.post('/register', registerStudent);
+router.get('/', getAllStudents);
+
+module.exports = router;
+
+In server.js:
+
+const express = require('express');
+const app = express();
+const studentRoutes = require('./routes/studentRoutes');
+const electionRoutes = require('./routes/electionRoutes');
+const candidateRoutes = require('./routes/candidateRoutes');
+const voteRoutes = require('./routes/voteRoutes');
+
+app.use(express.json());
+app.use('/api/students', studentRoutes);
+app.use('/api/elections', electionRoutes);
+app.use('/api/candidates', candidateRoutes);
+app.use('/api/votes', voteRoutes);
+
+const PORT = 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+5️⃣ Bonus (Optional)
+- Add data validation (ensure required fields are filled).
+- Handle errors (e.g., student already voted).
+- Add routes to delete or update elections/candidates.
+- Format results neatly (sorted by votes).
+6️⃣ Deliverables
+Students should submit:
+1. Their complete project folder (with routes & controllers).
+2. A short README.md explaining how to start the server and listing the routes with sample JSON requests.
+7️⃣ Evaluation Criteria
+Project Setup — Proper folder and server structure (10 pts)
+Student APIs — Registration & listing (20 pts)
+Election & Candidate APIs — CRUD implementation (25 pts)
+Voting Logic — Enforces one-vote-per-election rule (25 pts)
+Code Organization — Uses controllers, clean code (10 pts)
+Bonus — Validation, neat results, error handling (10 pts)
